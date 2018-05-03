@@ -2,4 +2,26 @@
 ---
 openio_redis_namespace: "OPENIO"
 openio_redis_serviceid: "0"
+
+openio_redis_bind_address: "{{ ansible_default_ipv4.address }}"
+openio_redis_bind_port: 6011
+openio_redis_tcp_backlog_queue_size: 511
+openio_redis_stacktrace_size_limit: 8192
+openio_redis_loglevel: notice
+openio_redis_databases: 16
+openio_redis_saves:
+  - { "seconds": 900, "changes": 1 }
+  - { "seconds": 300, "changes": 10 }
+  - { "seconds": 60, "changes": 10000 }
+openio_redis_timeout: 0
+openio_redis_tcp-keepalive: 0
+openio_redis_maxclients: 10000
+openio_redis_maxmemory: 0
+
+openio_redis_master_groupname: "{{ openio_redis_namespace }}-master-1"
+openio_redis_quorum: 2
+openio_redis_down_after: 1000
+openio_redis_parallel_sync: 1
+openio_redis_failover_timeout: 180000
+openio_redis_auth-pass: ""
 ...

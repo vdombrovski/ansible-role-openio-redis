@@ -1,0 +1,18 @@
+# {{ ansible_managed }}
+bind {{ openio_redis_bind_address }}
+port {{ openio_redis_bind_port }}
+dir "/var/lib/oio/sds/{{ openio_redis_namespace }}/redissentinel-{{ openio_redis_serviceid }}"
+daemonize no
+pidfile "/var/lib/oio/sds/{{ openio_redis_namespace }}/redissentinel-{{ openio_redis_serviceid }}/redissentinel-{{ openio_redis_serviceid }}.pid"
+logfile "/var/log/oio/sds/{{ openio_redis_namespace }}/redissentinel-{{ openio_redis_serviceid }}/redissentinel-{{ openio_redis_serviceid }}.log"
+{% if ansible_family == 'RedHat' %}
+protected-mode yes
+{% endif %}
+
+sentinel monitor {{ openio_redis_master_groupname }} {{ openio_redis_bind_address }} 6011 {{ openio_redis_quorum }}
+sentinel down-after-milliseconds {{ openio_redis_master_groupname }} {{ openio_redis_quorum }}
+sentinel parallel-syncs {{ openio_redis_master_groupname }} {{ openio_redis_parallel_sync }}
+sentinel failover-timeout {{ openio_redis_master_groupname }} {{ openio_redis_failover_timeout }}
+{% if openio_redis_auth-pass %}
+sentinel auth-pass {{ openio_redis_master_groupname }} {{ openio_redis_auth-pass }}
+{% endif %}

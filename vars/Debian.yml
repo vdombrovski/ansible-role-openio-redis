@@ -2,5 +2,7 @@
 # Distribution-specific variables for Ubuntu, Debian, ...
 ---
 redis_packages:
-  - openio-redis
+  - python-redis
+  - redis-server
+  - redis-tools
 ...
