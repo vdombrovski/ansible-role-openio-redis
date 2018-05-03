@@ -1,0 +1,6 @@
+# roles/redis/vars/RedHat.yml
+# Distribution-specific variables for RHEL, CentOS, ...
+---
+redis_packages:
+  - openio-redis
+...

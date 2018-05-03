@@ -1,0 +1,5 @@
+# roles/redis/defaults/main.yml
+---
+openio_redis_namespace: "OPENIO"
+openio_redis_serviceid: "0"
+...

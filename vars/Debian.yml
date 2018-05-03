@@ -1,0 +1,6 @@
+# roles/redis/vars/Debian.yml
+# Distribution-specific variables for Ubuntu, Debian, ...
+---
+redis_packages:
+  - openio-redis
+...

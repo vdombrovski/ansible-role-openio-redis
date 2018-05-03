@@ -1,12 +1,55 @@
-# Docker test environment
+[![Build Status](https://travis-ci.org/open-io/ansible-role-openio-redis.svg?branch=master)](https://travis-ci.org/open-io/ansible-role-openio-redis)
+# Ansible role `redis`
 
-1. Fetch the test branch: `git fetch origin docker-tests`
-2. Create a Git worktree for the test code: `git worktree add docker-tests docker-tests`. This will create a directory `docker-tests/`
-3. The script `docker-tests.sh` will create a Docker container, and apply this role from a playbook `<test.yml>`. The Docker images are configured for testing Ansible roles and are published at <https://hub.docker.com/r/bertvv/ansible-testing/>. There are images available for several distributions and versions. The distribution and version should be specified outside the script using environment variables:
+An Ansible role for redis. Specifically, the responsibilities of this role are to:
 
-    ```
-    DISTRIBUTION=centos VERSION=7 ./docker-tests/docker-tests.sh
-    DISTRIBUTION=ubuntu VERSION=16.04 ./docker-tests/docker-tests.sh
-    ```
+- Install a Redis
+- Configure a redis server
+- Configure a redis sentinel
 
-    The specific combinations of distributions and versions that are supported by this role are specified in `.travis.yml`.
+## Requirements
+
+- Ansible 2.4+
+
+## Role Variables
+
+
+| Variable   | Default | Comments (type)  |
+| :---       | :---    | :---             |
+| `openio_redis_...` | `...`   | ...              |
+
+## Dependencies
+
+No dependencies.
+
+## Example Playbook
+
+```yaml
+- hosts: all
+  gather_facts: true
+  become: true
+  roles:
+    - role: redis
+```
+
+
+```ini
+[all]
+node1 ansible_host=192.168.1.173
+```
+
+## Contributing
+
+Issues, feature requests, ideas are appreciated and can be posted in the Issues section.
+
+Pull requests are also very welcome.
+The best way to submit a PR is by first creating a fork of this Github project, then creating a topic branch for the suggested change and pushing that branch to your own fork.
+Github can then easily create a PR based on that branch.
+
+## License
+
+Apache License, Version 2.0
+
+## Contributors
+
+- [Cedric DELGEHIER](https://github.com/cdelgehier) (maintainer)

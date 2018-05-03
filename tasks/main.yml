@@ -1,0 +1,73 @@
+# roles/redis/tasks/main.yml
+---
+- name: "Include {{ ansible_distribution }} variables"
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution }}.yml"
+    - "{{ ansible_os_family }}.yml"
+  tags: install
+
+- name: Create the 'openio' group
+  group:
+    name: openio
+    gid: "{{ openio_group_openio_gid | default('220')}}"
+  tags: install
+
+- name: Create the 'openio' user
+  user:
+    name: openio
+    comment: "openio account"
+    uid: "{{ openio_user_openio_uid | default('120')}}"
+    group: openio
+  tags: install
+
+- name: "Include {{ ansible_distribution }} tasks"
+  include_tasks: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution }}.yml"
+    - "{{ ansible_os_family }}.yml"
+  tags: install
+
+- name: Test directories presence
+  stat:
+    path: "{{ item }}"
+  register: _dir
+  with_items:
+    - "/etc/gridinit.d/{{ openio_redis_namespace }}"
+    - "{{ openio_redis_sysconfig_dir }}/redis-{{ openio_redis_serviceid }}"
+    - "/var/lib/oio/sds/{{ openio_redis_namespace }}/redis-{{ openio_redis_serviceid }}"
+
+- name: Ensure directories exists
+  file:
+    path: "{{ item.item }}"
+    state: directory
+    owner: openio
+    group: openio
+    mode: 0755
+    recurse: true
+  with_items: "{{ _dir.results }}"
+  when: not item.stat.exists
+  tags: install
+
+- name: Generate configuration files
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: openio
+    group: openio
+    mode: 0644
+  with_items:
+    - src: "redis.conf.j2"
+      dest: "{{ openio_redis_sysconfig_dir }}/\
+        redis-{{ openio_redis_serviceid }}/redis-{{ openio_redis_serviceid }}.conf"
+    - src: "gridinit_redis.conf.j2"
+      dest: "{{ openio_redis_gridinit_dir }}/redis-{{ openio_redis_serviceid }}.conf"
+  register: _redis_conf
+
+- name: restart redis
+  shell: |
+    gridinit_cmd reload
+    gridinit_cmd restart  {{openio_redis_namespace}}-redis-{{openio_redis_serviceid}}
+  when: _redis_conf.changed
+  tags: configure
+...
