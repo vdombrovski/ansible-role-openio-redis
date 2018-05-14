@@ -36,6 +36,7 @@
     - "/etc/gridinit.d/{{ openio_redis_namespace }}"
     - "{{ openio_redis_sysconfig_dir }}/redis-{{ openio_redis_serviceid }}"
     - "/var/lib/oio/sds/{{ openio_redis_namespace }}/redis-{{ openio_redis_serviceid }}"
+    - "/var/log/oio/sds/{{ openio_redis_namespace }}/redis-{{ openio_redis_serviceid }}"
 
 - name: Ensure directories exists
   file:
@@ -57,10 +58,10 @@
     group: openio
     mode: 0644
   with_items:
-    - src: "redis.conf.j2"
+    - src: "redis-server.conf.j2"
       dest: "{{ openio_redis_sysconfig_dir }}/\
-        redis-{{ openio_redis_serviceid }}/redis-{{ openio_redis_serviceid }}.conf"
-    - src: "gridinit_redis.conf.j2"
+        redis-{{ openio_redis_serviceid }}/redis.conf"
+    - src: "gridinit_redis-server.conf.j2"
       dest: "{{ openio_redis_gridinit_dir }}/redis-{{ openio_redis_serviceid }}.conf"
   register: _redis_conf
 

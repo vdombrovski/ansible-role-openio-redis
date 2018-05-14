@@ -5,7 +5,7 @@ port {{ openio_redis_bind_port }}
 tcp-backlog {{ openio_redis_tcp_backlog_queue_size }}
 bind {{ openio_redis_bind_address }}
 timeout {{ openio_redis_timeout }}
-tcp-keepalive {{ openio_redis_tcp-keepalive }}
+tcp-keepalive {{ openio_redis_tcp_keepalive }}
 loglevel {{ openio_redis_loglevel }}
 logfile "/var/log/oio/sds/{{ openio_redis_namespace }}/redis-{{ openio_redis_serviceid }}/redis-{{ openio_redis_serviceid }}.log"
 databases {{ openio_redis_databases }}

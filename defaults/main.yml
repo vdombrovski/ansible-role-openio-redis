@@ -14,7 +14,7 @@ openio_redis_saves:
   - { "seconds": 300, "changes": 10 }
   - { "seconds": 60, "changes": 10000 }
 openio_redis_timeout: 0
-openio_redis_tcp-keepalive: 0
+openio_redis_tcp_keepalive: 0
 openio_redis_maxclients: 10000
 openio_redis_maxmemory: 0
 
