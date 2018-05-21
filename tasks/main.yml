@@ -34,9 +34,10 @@
   register: _dir
   with_items:
     - "/etc/gridinit.d/{{ openio_redis_namespace }}"
-    - "{{ openio_redis_sysconfig_dir }}/redis-{{ openio_redis_serviceid }}"
-    - "/var/lib/oio/sds/{{ openio_redis_namespace }}/redis-{{ openio_redis_serviceid }}"
-    - "/var/log/oio/sds/{{ openio_redis_namespace }}/redis-{{ openio_redis_serviceid }}"
+    - "{{ openio_redis_sysconfig_dir }}/{{ service_type }}-{{ openio_redis_serviceid }}"
+    - "{{ openio_redis_volume }}"
+    - "{{ openio_redis_pid_directory }}"
+    - "/var/log/oio/sds/{{ openio_redis_namespace }}/{{ service_type }}-{{ openio_redis_serviceid }}"
 
 - name: Ensure directories exists
   file:
@@ -50,6 +51,17 @@
   when: not item.stat.exists
   tags: install
 
+- name: Ensure Redis pid directory is persistant
+  lineinfile:
+    dest: /etc/tmpfiles.d/redis.conf
+    create: true
+    line: "d {{ openio_redis_pid_directory }} 755 openio openio -"
+    owner: openio
+    group: openio
+    mode: 0644
+  tags: install
+  when: openio_redis_pid_directory.split(' ')[0] | dirname is match("/run/.*")
+
 - name: Generate configuration files
   template:
     src: "{{ item.src }}"
@@ -58,17 +70,17 @@
     group: openio
     mode: 0644
   with_items:
-    - src: "redis-server.conf.j2"
+    - src: "{{ service_type }}.conf.j2"
       dest: "{{ openio_redis_sysconfig_dir }}/\
-        redis-{{ openio_redis_serviceid }}/redis.conf"
-    - src: "gridinit_redis-server.conf.j2"
-      dest: "{{ openio_redis_gridinit_dir }}/redis-{{ openio_redis_serviceid }}.conf"
+        {{ service_type }}-{{ openio_redis_serviceid }}/{{ service_type }}.conf"
+    - src: "gridinit_redis.conf.j2"
+      dest: "{{ openio_redis_gridinit_dir }}/{{ service_type }}-{{ openio_redis_serviceid }}.conf"
   register: _redis_conf
 
 - name: restart redis
   shell: |
     gridinit_cmd reload
-    gridinit_cmd restart  {{openio_redis_namespace}}-redis-{{openio_redis_serviceid}}
+    gridinit_cmd restart  {{openio_redis_namespace}}-{{ service_type }}-{{openio_redis_serviceid}}
   when: _redis_conf.changed
   tags: configure
 ...

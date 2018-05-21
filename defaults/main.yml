@@ -3,8 +3,14 @@
 openio_redis_namespace: "OPENIO"
 openio_redis_serviceid: "0"
 
+openio_redis_mode: server
+openio_redis_volume: "/var/lib/oio/sds/{{ openio_redis_namespace }}/{{ service_type }}-{{ openio_redis_serviceid }}"
+openio_redis_pid_directory: "/run/redis/{{ openio_redis_namespace }}/{{ service_type }}-{{ openio_redis_serviceid }}"
 openio_redis_bind_address: "{{ ansible_default_ipv4.address }}"
-openio_redis_bind_port: 6011
+openio_redis_master:
+  address: "{{ ansible_default_ipv4.address }}"
+  port: 6011
+
 openio_redis_tcp_backlog_queue_size: 511
 openio_redis_stacktrace_size_limit: 8192
 openio_redis_loglevel: notice
@@ -23,5 +29,13 @@ openio_redis_quorum: 2
 openio_redis_down_after: 1000
 openio_redis_parallel_sync: 1
 openio_redis_failover_timeout: 180000
-openio_redis_auth-pass: ""
+openio_redis_auth_pass: ""
+
+openio_redis_mode_details:
+  server:
+    port: 6011
+    service_name: redis
+  sentinel:
+    port: 6012
+    service_name: redissentinel
 ...

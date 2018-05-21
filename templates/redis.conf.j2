@@ -1,7 +1,7 @@
 # {{ ansible_managed }}
 daemonize no
-pidfile "/var/lib/oio/sds/{{ openio_redis_namespace }}/redis-{{ openio_redis_serviceid }}/redis-{{ openio_redis_serviceid }}.pid"
-port {{ openio_redis_bind_port }}
+pidfile "{{ openio_redis_pid_directory }}/{{ service_type }}-{{ openio_redis_serviceid }}.pid"
+port {{ service_port }}
 tcp-backlog {{ openio_redis_tcp_backlog_queue_size }}
 bind {{ openio_redis_bind_address }}
 timeout {{ openio_redis_timeout }}
@@ -16,7 +16,7 @@ stop-writes-on-bgsave-error yes
 rdbcompression yes
 rdbchecksum yes
 dbfilename dump.rdb
-dir /var/lib/oio/sds/{{ openio_redis_namespace }}/redis-{{ openio_redis_serviceid }}
+dir "{{ openio_redis_volume }}"
 slave-serve-stale-data yes
 slave-read-only yes
 slave-priority 100
@@ -51,3 +51,6 @@ hz 10
 aof-rewrite-incremental-fsync yes
 maxclients {{ openio_redis_maxclients }}
 maxmemory {{ openio_redis_maxmemory }}
+{% if openio_redis_master.address not in ansible_all_ipv4_addresses %}
+slaveof {{ openio_redis_master.address }} {{ openio_redis_master.port }}
+{% endif %}

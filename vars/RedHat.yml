@@ -3,5 +3,6 @@
 ---
 redis_packages:
   - python-redis
+  - tuned
   - redis
 ...

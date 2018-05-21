@@ -6,4 +6,36 @@
   with_items: "{{ redis_packages }}"
   loop_control:
     loop_var: pkg
+
+- name: Set system overcommit policy
+  sysctl:
+    name: vm.overcommit_memory
+    value: 1
+    reload: true
+    state: present
+  when:
+    - openio_redis_mode == "server"
+    - docker is not defined
+
+- name: Disable Transparent Huge Pages until reboot
+  shell: "echo never > /sys/kernel/mm/transparent_hugepage/enabled && \
+    echo never > /sys/kernel/mm/transparent_hugepage/defrag"
+  ignore_errors: true
+  when:
+    - openio_redis_mode == "server"
+    - docker is not defined
+
+- name: Disable Transparent Huge Pages for next boots
+  lineinfile:
+    dest: /etc/rc.local
+    insertbefore: "exit 0"
+    line: "{{ rule }}"
+  with_items:
+    - "echo never > /sys/kernel/mm/transparent_hugepage/enabled"
+    - "echo never > /sys/kernel/mm/transparent_hugepage/defrag"
+  loop_control:
+    loop_var: rule
+  when:
+    - openio_redis_mode == "server"
+    - docker is not defined
 ...

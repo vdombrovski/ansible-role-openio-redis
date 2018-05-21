@@ -6,4 +6,11 @@ openio_redis_definition_file: >
   "{{ openio_redis_sysconfig_dir }}/
   {{ openio_redis_servicename }}/{{ openio_redis_servicename }}.conf"
 openio_redis_gridinit_dir: "/etc/gridinit.d/{{ openio_redis_namespace }}"
+
+service_type: "{{ openio_redis_mode_details[openio_redis_mode]['service_name'] }}"
+service_port: "{{ openio_redis_mode_details[openio_redis_mode]['port'] }}"
+
+openio_redis_transparent_hugepage_files:
+  - /sys/kernel/mm/transparent_hugepage/enabled
+  - /sys/kernel/mm/transparent_hugepage/defrag
 ...

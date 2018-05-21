@@ -6,4 +6,29 @@
   with_items: "{{ redis_packages }}"
   loop_control:
     loop_var: pkg
+
+- name: Set the tuned profile
+  copy:
+    src: tuned.conf
+    dest: /etc/tuned/redis/
+    mode: 0755
+  when:
+    - openio_redis_mode == "server"
+    - docker is not defined
+
+- name: Get tuned profile.
+  command: /usr/sbin/tuned-adm active
+  register: tuned_active
+  changed_when: false
+  ignore_errors: true
+  when:
+    - openio_redis_mode == "server"
+    - docker is not defined
+
+- name: Set redis tuned profile.
+  command: "/usr/sbin/tuned-adm profile redis"
+  when:
+    - openio_redis_mode == "server"
+    - docker is not defined
+    - "'redis' not in tuned_active.stdout"
 ...
