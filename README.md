@@ -57,7 +57,10 @@ No dependencies.
     - role: repository
     - role: gridinit
       openio_gridinit_namespace: "{{ NS }}"
-      openio_redis_bind_address: ""{{ hostvars[inventory_hostname]['ansible_' + interface]['ipv4']['address'] }}""
+      
+    - role: redis
+      openio_redis_namespace: "{{ NS }}"
+      openio_redis_bind_interface: "{{ interface }}"
       openio_redis_master:
         address: "{{ hostvars[ groups['redis'][0] ]['ansible_' + interface ]['ipv4']['address'] }}"
         port: 6011
@@ -65,7 +68,7 @@ No dependencies.
     - role: redis
       openio_redis_mode: sentinel
       openio_redis_namespace: "{{ NS }}"
-      openio_redis_bind_address: ""{{ hostvars[inventory_hostname]['ansible_' + interface]['ipv4']['address'] }}""
+      openio_redis_bind_interface: "{{ interface }}"
       openio_redis_master:
         address: "{{ hostvars[ groups['redis'][0] ]['ansible_' + interface ]['ipv4']['address'] }}"
         port: 6011
