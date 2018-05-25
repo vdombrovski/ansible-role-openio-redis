@@ -17,7 +17,8 @@ An Ansible role for redis. Specifically, the responsibilities of this role are t
 | Variable   | Default | Comments (type)  |
 | :---       | :---    | :---             |
 | `openio_redis_auth_pass` | `""` | Set the password to use to authenticate with the master and slaves |
-| `openio_redis_bind_address` | `"{{ ansible_default_ipv4.address }}"` | The address that this redis instance will run on |
+| `openio_redis_bind_address` | `"{{ hostvars[inventory_hostname]['ansible_' + openio_redis_bind_interface]['ipv4']['address'] }}"` | The address that this redis instance will run on |
+| `openio_redis_bind_interface` | `"{{ ansible_default_ipv4.alias }}"` | The interface that this redis instance will run on |
 | `openio_redis_databases` | `16` | Set the number of databases |
 | `openio_redis_down_after` | `1000` | Number of milliseconds the master (or any attached slave or sentinel) should be unreachable |
 | `openio_redis_failover_timeout` | `180000` | Specifies the failover timeout in milliseconds |

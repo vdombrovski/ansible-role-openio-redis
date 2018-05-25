@@ -40,6 +40,5 @@ script:
   - NORMALCHANGES=2 ./docker-tests/docker-tests.sh
 
   # Run functional tests on the container
-  - SUT_ID=$(docker ps -aq |sed '1q;d') ./docker-tests/functional-tests.sh
-  #- SUT_IP=172.17.0.2 ./docker-tests/functional-tests.sh
+  - SUT_ID=$(docker ps -aq |sed '1q;d') SUT_IP=172.17.0.2 ./docker-tests/functional-tests.sh
 ...
