@@ -25,6 +25,7 @@
     - role: repository
     - role: gridinit
       openio_gridinit_namespace: "{{ NS }}"
+      openio_gridinit_per_ns: true
     - role: role_under_test
       openio_redis_namespace: "{{ NS }}"
       openio_redis_bind_address: "{{ ansible_default_ipv4.address }}"
