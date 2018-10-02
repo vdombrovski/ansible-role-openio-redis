@@ -10,6 +10,10 @@ sentinel monitor {{ openio_redis_master_groupname }} {{ openio_redis_master.addr
 sentinel down-after-milliseconds {{ openio_redis_master_groupname }} {{ openio_redis_down_after }}
 sentinel parallel-syncs {{ openio_redis_master_groupname }} {{ openio_redis_parallel_sync }}
 sentinel failover-timeout {{ openio_redis_master_groupname }} {{ openio_redis_failover_timeout }}
+
+min-slaves-to-write 1
+min-slaves-max-lag 10
+
 {% if openio_redis_auth_pass %}
 sentinel auth-pass {{ openio_redis_master_groupname }} {{ openio_redis_auth_pass }}
 {% endif %}
