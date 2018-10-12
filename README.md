@@ -27,11 +27,11 @@ An Ansible role for redis. Specifically, the responsibilities of this role are t
 | `openio_redis_master_groupname` | `"{{ openio_redis_namespace }}-master-1"` | Set of instances |
 | `openio_redis_maxclients` | `10000` | Set the max number of connected clients at the same time |
 | `openio_redis_maxmemory` | `0` | Set a memory usage limit to the specified amount of bytes |
-| `openio_redis_mode` | `server` | The redis mode : `server` or `sentinel` |
-| `openio_redis_mode_details` | `dict` | Dict of `port` and `service_name` for a `openio_redis_mode` |
+| `openio_redis_type` | `redis` | The redis mode : `redis` or `redissentinel` |
+| `openio_redis_type_details` | `dict` | Dict of `port` and `service_name` for a `openio_redis_type` |
 | `openio_redis_namespace` | `"OPENIO"` | Namespace |
 | `openio_redis_parallel_sync` | `1` | How many slaves we can reconfigure to point to the new slave simultaneously during the failover |
-| `openio_redis_pid_directory` | `"/run/redis/{{ openio_redis_namespace }}/{{ service_type }}-{{ openio_redis_serviceid }}"` | Folder for pid file |
+| `openio_redis_pid_directory` | `"/run/redis/{{ openio_redis_namespace }}/{{ openio_redis_type }}-{{ openio_redis_serviceid }}"` | Folder for pid file |
 | `openio_redis_quorum` | `2` | The quorum is the number of `sentinel` that need to agree about the fact the master is not reachable, in order for really mark the slave as failing, and eventually start a fail over procedure if possible |
 | `openio_redis_saves` | `dict` | Will save the DB if both the given number of seconds and the given number of write operations against the DB occurred |
 | `openio_redis_serviceid` | `"0"` | ID in gridinit |
@@ -39,7 +39,7 @@ An Ansible role for redis. Specifically, the responsibilities of this role are t
 | `openio_redis_tcp_backlog_queue_size` | `511` | In high requests-per-second environments you need an high backlog in order to avoid slow clients connections issues |
 | `openio_redis_tcp_keepalive` | `0` | The specified value (in seconds) is the period used to send ACKs to clients |
 | `openio_redis_timeout` | `0` | Close the connection after a client is idle for N seconds |
-| `openio_redis_volume` | `"/var/lib/oio/sds/{{ openio_redis_namespace }}/{{ service_type }}-{{ openio_redis_serviceid }}"` | The DB will be written inside this directory |
+| `openio_redis_volume` | `"/var/lib/oio/sds/{{ openio_redis_namespace }}/{{ openio_redis_type }}-{{ openio_redis_serviceid }}"` | The DB will be written inside this directory |
 
 ## Dependencies
 
@@ -57,16 +57,16 @@ No dependencies.
     - role: repository
     - role: gridinit
       openio_gridinit_namespace: "{{ NS }}"
-      
+
     - role: redis
       openio_redis_namespace: "{{ NS }}"
       openio_redis_bind_interface: "{{ interface }}"
       openio_redis_master:
         address: "{{ hostvars[ groups['redis'][0] ]['ansible_' + interface ]['ipv4']['address'] }}"
         port: 6011
-    
+
     - role: redis
-      openio_redis_mode: sentinel
+      openio_redis_type: sentinel
       openio_redis_namespace: "{{ NS }}"
       openio_redis_bind_interface: "{{ interface }}"
       openio_redis_master:

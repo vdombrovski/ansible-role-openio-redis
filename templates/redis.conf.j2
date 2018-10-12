@@ -1,7 +1,7 @@
 # {{ ansible_managed }}
 daemonize no
-pidfile "{{ openio_redis_pid_directory }}/{{ service_type }}-{{ openio_redis_serviceid }}.pid"
-port {{ service_port }}
+pidfile "{{ openio_redis_pid_directory }}/{{ openio_redis_type }}-{{ openio_redis_serviceid }}.pid"
+port {{ openio_redis_bind_port }}
 tcp-backlog {{ openio_redis_tcp_backlog_queue_size }}
 bind {{ openio_redis_bind_address }}
 timeout {{ openio_redis_timeout }}

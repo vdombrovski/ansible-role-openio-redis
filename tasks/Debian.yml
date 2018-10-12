@@ -14,16 +14,16 @@
     reload: true
     state: present
   when:
-    - openio_redis_mode == "server"
-    - docker is not defined
+    - openio_redis_type == "redis"
+    - ansible_virtualization_type != 'docker'
 
 - name: Disable Transparent Huge Pages until reboot
   shell: "echo never > /sys/kernel/mm/transparent_hugepage/enabled && \
     echo never > /sys/kernel/mm/transparent_hugepage/defrag"
   ignore_errors: true
   when:
-    - openio_redis_mode == "server"
-    - docker is not defined
+    - openio_redis_type == "redis"
+    - ansible_virtualization_type != 'docker'
 
 - name: Disable Transparent Huge Pages for next boots
   lineinfile:
@@ -36,6 +36,6 @@
   loop_control:
     loop_var: rule
   when:
-    - openio_redis_mode == "server"
-    - docker is not defined
+    - openio_redis_type == "redis"
+    - ansible_virtualization_type != 'docker'
 ...

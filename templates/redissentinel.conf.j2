@@ -1,10 +1,10 @@
 # {{ ansible_managed }}
 bind {{ openio_redis_bind_address }}
-port {{ service_port }}
+port {{ openio_redis_bind_port }}
 dir "{{ openio_redis_volume }}"
 daemonize no
-pidfile "{{ openio_redis_pid_directory }}/{{ service_type }}-{{ openio_redis_serviceid }}.pid"
-logfile "/var/log/oio/sds/{{ openio_redis_namespace }}/{{ service_type }}-{{ openio_redis_serviceid }}/{{ service_type }}-{{ openio_redis_serviceid }}.log"
+pidfile "{{ openio_redis_pid_directory }}/{{ openio_redis_type }}-{{ openio_redis_serviceid }}.pid"
+logfile "/var/log/oio/sds/{{ openio_redis_namespace }}/{{ openio_redis_type }}-{{ openio_redis_serviceid }}/{{ openio_redis_type }}-{{ openio_redis_serviceid }}.log"
 
 sentinel monitor {{ openio_redis_master_groupname }} {{ openio_redis_master.address }} {{ openio_redis_master.port }} {{ openio_redis_quorum }}
 sentinel down-after-milliseconds {{ openio_redis_master_groupname }} {{ openio_redis_down_after }}

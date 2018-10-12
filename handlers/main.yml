@@ -1,8 +1,3 @@
 # roles/redis/handlers/main.yml
 ---
-#- name: restart redis
-#  service:
-#    name: "{{ redis_service }}"
-#    state: restarted
-#
 ...

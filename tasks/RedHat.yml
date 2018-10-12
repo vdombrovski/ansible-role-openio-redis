@@ -13,7 +13,7 @@
     dest: /etc/tuned/redis/
     mode: 0755
   when:
-    - openio_redis_mode == "server"
+    - openio_redis_type == "server"
     - docker is not defined
 
 - name: Get tuned profile.
@@ -22,13 +22,13 @@
   changed_when: false
   ignore_errors: true
   when:
-    - openio_redis_mode == "server"
+    - openio_redis_type == "server"
     - docker is not defined
 
 - name: Set redis tuned profile.
   command: "/usr/sbin/tuned-adm profile redis"
   when:
-    - openio_redis_mode == "server"
+    - openio_redis_type == "server"
     - docker is not defined
     - "'redis' not in tuned_active.stdout"
 ...

@@ -34,10 +34,10 @@
   register: _dir
   with_items:
     - "/etc/gridinit.d/{{ openio_redis_namespace }}"
-    - "{{ openio_redis_sysconfig_dir }}/{{ service_type }}-{{ openio_redis_serviceid }}"
+    - "{{ openio_redis_sysconfig_dir }}/{{ openio_redis_type }}-{{ openio_redis_serviceid }}"
     - "{{ openio_redis_volume }}"
     - "{{ openio_redis_pid_directory }}"
-    - "/var/log/oio/sds/{{ openio_redis_namespace }}/{{ service_type }}-{{ openio_redis_serviceid }}"
+    - "/var/log/oio/sds/{{ openio_redis_namespace }}/{{ openio_redis_type }}-{{ openio_redis_serviceid }}"
 
 - name: Ensure directories exists
   file:
@@ -70,17 +70,20 @@
     group: openio
     mode: 0644
   with_items:
-    - src: "{{ service_type }}.conf.j2"
+    - src: "{{ openio_redis_type }}.conf.j2"
       dest: "{{ openio_redis_sysconfig_dir }}/\
-        {{ service_type }}-{{ openio_redis_serviceid }}/{{ service_type }}.conf"
+        {{ openio_redis_type }}-{{ openio_redis_serviceid }}/{{ openio_redis_type }}.conf"
     - src: "gridinit_redis.conf.j2"
-      dest: "{{ openio_redis_gridinit_dir }}/{{ service_type }}-{{ openio_redis_serviceid }}.conf"
+      dest: "{{ openio_redis_gridinit_dir }}/{{ openio_redis_gridinit_file_prefix }}\
+        {{ openio_redis_type }}-{{ openio_redis_serviceid }}.conf"
   register: _redis_conf
 
 - name: restart redis
   shell: |
     gridinit_cmd reload
-    gridinit_cmd restart  {{openio_redis_namespace}}-{{ service_type }}-{{openio_redis_serviceid}}
-  when: _redis_conf.changed
+    gridinit_cmd restart  {{openio_redis_namespace}}-{{ openio_redis_type }}-{{openio_redis_serviceid}}
+  when:
+    - _redis_conf.changed
+    - not openio_redis_provision_only
   tags: configure
 ...
