@@ -6,7 +6,8 @@
   with_items: "{{ redis_packages }}"
   loop_control:
     loop_var: pkg
-
+  ignore_errors: "{{ ansible_check_mode }}"
+ 
 - name: Set the tuned profile
   copy:
     src: tuned.conf
