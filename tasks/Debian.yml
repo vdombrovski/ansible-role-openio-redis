@@ -26,16 +26,17 @@
     - openio_redis_type == "redis"
     - ansible_virtualization_type != 'docker'
 
-- name: Disable Transparent Huge Pages for next boots
-  lineinfile:
-    dest: /etc/rc.local
-    insertbefore: "exit 0"
-    line: "{{ rule }}"
-  with_items:
-    - "echo never > /sys/kernel/mm/transparent_hugepage/enabled"
-    - "echo never > /sys/kernel/mm/transparent_hugepage/defrag"
-  loop_control:
-    loop_var: rule
+- name: Disable Transparent Huge Pages for next reboot
+  block:
+    - copy:
+        src: disable-thp.service
+        dest: /etc/systemd/system/
+        mode: 644
+
+    - systemd:
+        name: disable-thp
+        enabled: true
+        daemon_reload: true
   when:
     - openio_redis_type == "redis"
     - ansible_virtualization_type != 'docker'
