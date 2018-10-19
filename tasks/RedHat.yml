@@ -7,7 +7,11 @@
   loop_control:
     loop_var: pkg
   ignore_errors: "{{ ansible_check_mode }}"
- 
+  register: install_packages
+  until: install_packages is success
+  retries: 5
+  delay: 2
+
 - name: Set the tuned profile
   copy:
     src: tuned.conf
