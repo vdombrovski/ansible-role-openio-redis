@@ -5,4 +5,5 @@ redis_packages:
   - python-redis
   - redis-server
   - redis-tools
+syslog_user: syslog
 ...

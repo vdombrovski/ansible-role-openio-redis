@@ -5,4 +5,5 @@ redis_packages:
   - python-redis
   - tuned
   - redis
+syslog_user: openio
 ...

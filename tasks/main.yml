@@ -37,7 +37,6 @@
     - "{{ openio_redis_sysconfig_dir }}/{{ openio_redis_type }}-{{ openio_redis_serviceid }}"
     - "{{ openio_redis_volume }}"
     - "{{ openio_redis_pid_directory }}"
-    - "/var/log/oio/sds/{{ openio_redis_namespace }}/{{ openio_redis_type }}-{{ openio_redis_serviceid }}"
 
 - name: Ensure directories exists
   file:
@@ -49,6 +48,16 @@
     recurse: true
   with_items: "{{ _dir.results }}"
   when: not item.stat.exists
+  tags: install
+
+- name: Ensure log directory
+  file:
+    path: "/var/log/oio/sds/{{ openio_redis_namespace }}/{{ openio_redis_type }}-{{ openio_redis_serviceid }}"
+    state: directory
+    owner: "{{ syslog_user }}"
+    group: openio
+    mode: 0770
+    recurse: true
   tags: install
 
 - name: Ensure Redis pid directory is persistant
