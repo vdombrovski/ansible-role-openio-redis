@@ -52,25 +52,26 @@ No dependencies.
   become: true
   vars:
     NS: OIO
-    interface: 'eth0'
   roles:
+    - role: users
     - role: repository
     - role: gridinit
       openio_gridinit_namespace: "{{ NS }}"
-
-    - role: redis
+      openio_gridinit_per_ns: true
+    - role: role_under_test
       openio_redis_namespace: "{{ NS }}"
-      openio_redis_bind_interface: "{{ interface }}"
+      openio_redis_bind_address: "{{ ansible_default_ipv4.address }}"
       openio_redis_master:
-        address: "{{ hostvars[ groups['redis'][0] ]['ansible_' + interface ]['ipv4']['address'] }}"
+        address: 172.17.0.2
         port: 6011
 
-    - role: redis
-      openio_redis_type: sentinel
+    - role: role_under_test
       openio_redis_namespace: "{{ NS }}"
-      openio_redis_bind_interface: "{{ interface }}"
+      openio_redis_bind_address: "{{ ansible_default_ipv4.address }}"
+      openio_redis_type: redissentinel
+      openio_redis_bind_port: 6012
       openio_redis_master:
-        address: "{{ hostvars[ groups['redis'][0] ]['ansible_' + interface ]['ipv4']['address'] }}"
+        address: 172.17.0.2
         port: 6011
 ```
 
