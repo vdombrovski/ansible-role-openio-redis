@@ -19,10 +19,13 @@
   become: true
   vars:
     NS: TRAVIS
-    # cookie for systctl in docker
-    docker: "tests"
   roles:
+    - role: users
     - role: repository
+      openio_repository_no_log: false
+      openio_repository_products:
+        sds:
+          release: "18.10"
     - role: gridinit
       openio_gridinit_namespace: "{{ NS }}"
       openio_gridinit_per_ns: true
@@ -36,7 +39,8 @@
     - role: role_under_test
       openio_redis_namespace: "{{ NS }}"
       openio_redis_bind_address: "{{ ansible_default_ipv4.address }}"
-      openio_redis_mode: sentinel
+      openio_redis_type: redissentinel
+      openio_redis_bind_port: 6012
       openio_redis_master:
         address: 172.17.0.2
         port: 6011
