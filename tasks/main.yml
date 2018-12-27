@@ -44,26 +44,35 @@
 
 - name: Generate configuration files
   template:
-    src: "{{ item.src }}"
-    dest: "{{ item.dest }}"
+    src: "gridinit_redis.conf.j2"
+    dest: "{{ openio_redis_gridinit_dir }}/{{ openio_redis_gridinit_file_prefix }}{{ openio_redis_servicename }}.conf"
     owner: openio
     group: openio
     mode: 0644
-  with_items:
-    - src: "{{ openio_redis_type }}.conf.j2"
-      dest: "{{ openio_redis_sysconfig_dir }}/\
-        {{ openio_redis_servicename }}/{{ openio_redis_type }}.conf"
-    - src: "gridinit_redis.conf.j2"
-      dest: "{{ openio_redis_gridinit_dir }}/{{ openio_redis_gridinit_file_prefix }}\
-        {{ openio_redis_servicename }}.conf"
+  register: _gridinit_conf
+  tags: configure
+
+- name: Generate {{ openio_redis_type }} configuration
+  lineinfile:
+    create: true
+    dest: "{{ openio_redis_sysconfig_dir }}/\
+      {{ openio_redis_servicename }}/{{ openio_redis_type }}.conf"
+    line: "{{ line }}"
+    mode: 0644
+    owner: openio
+    group: openio
+  with_items: "{{ lookup('template', openio_redis_type ~ '.conf.j2').splitlines() }}"
+  loop_control:
+    loop_var: line
   register: _redis_conf
+  tags: configure
 
 - name: restart redis
   shell: |
     gridinit_cmd reload
     gridinit_cmd restart  {{ openio_redis_namespace }}-{{ openio_redis_servicename }}
   when:
-    - _redis_conf.changed
+    - _redis_conf.changed or _gridinit_conf.changed
     - not openio_redis_provision_only
   tags: configure
 ...

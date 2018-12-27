@@ -21,7 +21,6 @@ An Ansible role for redis. Specifically, the responsibilities of this role are t
 | `openio_redis_bind_interface` | `"{{ ansible_default_ipv4.alias }}"` | The interface that this redis instance will run on |
 | `openio_redis_databases` | `16` | Set the number of databases |
 | `openio_redis_down_after` | `1000` | Number of milliseconds the master (or any attached slave or sentinel) should be unreachable |
-| `openio_redis_failover_timeout` | `180000` | Specifies the failover timeout in milliseconds |
 | `openio_redis_loglevel` | `notice` | Specify the server verbosity level |
 | `openio_redis_master` | `dict` | IP `address` and `port` of master |
 | `openio_redis_master_groupname` | `"{{ openio_redis_namespace }}-master-1"` | Set of instances |
@@ -30,7 +29,6 @@ An Ansible role for redis. Specifically, the responsibilities of this role are t
 | `openio_redis_type` | `redis` | The redis mode : `redis` or `redissentinel` |
 | `openio_redis_type_details` | `dict` | Dict of `port` and `service_name` for a `openio_redis_type` |
 | `openio_redis_namespace` | `"OPENIO"` | Namespace |
-| `openio_redis_parallel_sync` | `1` | How many slaves we can reconfigure to point to the new slave simultaneously during the failover |
 | `openio_redis_pid_directory` | `"/run/redis/{{ openio_redis_namespace }}/{{ openio_redis_type }}-{{ openio_redis_serviceid }}"` | Folder for pid file |
 | `openio_redis_quorum` | `2` | The quorum is the number of `sentinel` that need to agree about the fact the master is not reachable, in order for really mark the slave as failing, and eventually start a fail over procedure if possible |
 | `openio_redis_saves` | `dict` | Will save the DB if both the given number of seconds and the given number of write operations against the DB occurred |

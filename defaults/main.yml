@@ -33,8 +33,6 @@ openio_redis_maxmemory: 0
 openio_redis_master_groupname: "{{ openio_redis_namespace }}-master-1"
 openio_redis_quorum: 2
 openio_redis_down_after: 1000
-openio_redis_parallel_sync: 1
-openio_redis_failover_timeout: 180000
 openio_redis_auth_pass: ""
 
 openio_redis_gridinit_file_prefix: ""
