@@ -23,10 +23,10 @@
     mode: "{{ item.mode | default(0755) }}"
   with_items:
     - path: "/etc/gridinit.d/{{ openio_redis_namespace }}"
-    - path: "{{ openio_redis_sysconfig_dir }}/{{ openio_redis_type }}-{{ openio_redis_serviceid }}"
+    - path: "{{ openio_redis_sysconfig_dir }}/{{ openio_redis_servicename }}"
     - path: "{{ openio_redis_volume }}"
     - path: "{{ openio_redis_pid_directory }}"
-    - path: "/var/log/oio/sds/{{ openio_redis_namespace }}/{{ openio_redis_type }}-{{ openio_redis_serviceid }}"
+    - path: "/var/log/oio/sds/{{ openio_redis_namespace }}/{{ openio_redis_servicename }}"
       owner: "{{ syslog_user }}"
       mode: "0770"
   tags: install
@@ -52,16 +52,16 @@
   with_items:
     - src: "{{ openio_redis_type }}.conf.j2"
       dest: "{{ openio_redis_sysconfig_dir }}/\
-        {{ openio_redis_type }}-{{ openio_redis_serviceid }}/{{ openio_redis_type }}.conf"
+        {{ openio_redis_servicename }}/{{ openio_redis_type }}.conf"
     - src: "gridinit_redis.conf.j2"
       dest: "{{ openio_redis_gridinit_dir }}/{{ openio_redis_gridinit_file_prefix }}\
-        {{ openio_redis_type }}-{{ openio_redis_serviceid }}.conf"
+        {{ openio_redis_servicename }}.conf"
   register: _redis_conf
 
 - name: restart redis
   shell: |
     gridinit_cmd reload
-    gridinit_cmd restart  {{openio_redis_namespace}}-{{ openio_redis_type }}-{{openio_redis_serviceid}}
+    gridinit_cmd restart  {{ openio_redis_namespace }}-{{ openio_redis_servicename }}
   when:
     - _redis_conf.changed
     - not openio_redis_provision_only
