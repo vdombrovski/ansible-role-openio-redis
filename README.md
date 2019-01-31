@@ -29,7 +29,7 @@ An Ansible role for redis. Specifically, the responsibilities of this role are t
 | `openio_redis_type` | `redis` | The redis mode : `redis` or `redissentinel` |
 | `openio_redis_type_details` | `dict` | Dict of `port` and `service_name` for a `openio_redis_type` |
 | `openio_redis_namespace` | `"OPENIO"` | Namespace |
-| `openio_redis_pid_directory` | `"/run/redis/{{ openio_redis_namespace }}/{{ openio_redis_type }}-{{ openio_redis_serviceid }}"` | Folder for pid file |
+| `openio_redis_pid_directory` | `"/run/oio/sds/{{ openio_redis_namespace }}"` | Folder for pid file |
 | `openio_redis_quorum` | `2` | The quorum is the number of `sentinel` that need to agree about the fact the master is not reachable, in order for really mark the slave as failing, and eventually start a fail over procedure if possible |
 | `openio_redis_saves` | `dict` | Will save the DB if both the given number of seconds and the given number of write operations against the DB occurred |
 | `openio_redis_serviceid` | `"0"` | ID in gridinit |
