@@ -1,7 +1,7 @@
 # roles/redis/defaults/main.yml
 ---
-openio_redis_namespace: "OPENIO"
-openio_redis_serviceid: "0"
+openio_redis_namespace: "{{ namespace | default('OPENIO') }}"
+openio_redis_serviceid: "{{ 0 + openio_legacy_serviceid | d(0) | int }}"
 
 openio_redis_type: redis
 openio_redis_volume:
@@ -10,12 +10,16 @@ openio_redis_pid_directory:
   "/run/oio/sds/{{ openio_redis_namespace }}"
 openio_redis_bind_interface: "{{ ansible_default_ipv4.alias }}"
 openio_redis_bind_address:
-  "{{ hostvars[inventory_hostname]['ansible_' + openio_redis_bind_interface]['ipv4']['address'] }}"
+  "{{ openio_bind_address \
+    | default(hostvars[inventory_hostname]['ansible_' + openio_redis_bind_interface]['ipv4']['address']) }}"
 openio_redis_bind_port: 6011
 
+openio_redis_inventory_groupname: redis
 openio_redis_master:
-  address: "{{ ansible_default_ipv4.address }}"
-  port: 6011
+  address: "{{ hostvars[groups[openio_redis_inventory_groupname][0]]['openio_bind_address'] \
+    if openio_redis_inventory_groupname in groups \
+    else openio_redis_bind_address }}"
+  port: "{{ openio_redis_server_bind_port | d(6011) }}"
 
 openio_redis_tcp_backlog_queue_size: 511
 openio_redis_stacktrace_size_limit: 8192

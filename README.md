@@ -21,6 +21,8 @@ An Ansible role for redis. Specifically, the responsibilities of this role are t
 | `openio_redis_bind_interface` | `"{{ ansible_default_ipv4.alias }}"` | The interface that this redis instance will run on |
 | `openio_redis_databases` | `16` | Set the number of databases |
 | `openio_redis_down_after` | `1000` | Number of milliseconds the master (or any attached slave or sentinel) should be unreachable |
+openio_redis_inventory_groupname
+| `openio_redis_inventory_groupname` | `redis` | Set your inventory groupname |
 | `openio_redis_loglevel` | `notice` | Specify the server verbosity level |
 | `openio_redis_master` | `dict` | IP `address` and `port` of master |
 | `openio_redis_master_groupname` | `"{{ openio_redis_namespace }}-master-1"` | Set of instances |
@@ -32,7 +34,7 @@ An Ansible role for redis. Specifically, the responsibilities of this role are t
 | `openio_redis_pid_directory` | `"/run/oio/sds/{{ openio_redis_namespace }}"` | Folder for pid file |
 | `openio_redis_quorum` | `2` | The quorum is the number of `sentinel` that need to agree about the fact the master is not reachable, in order for really mark the slave as failing, and eventually start a fail over procedure if possible |
 | `openio_redis_saves` | `dict` | Will save the DB if both the given number of seconds and the given number of write operations against the DB occurred |
-| `openio_redis_serviceid` | `"0"` | ID in gridinit |
+| `openio_redis_serviceid` | `"{{ 0 + openio_legacy_serviceid | d(0) | int }}"` | ID in gridinit |
 | `openio_redis_stacktrace_size_limit` | `8192` | Stacktrace maximum size |
 | `openio_redis_tcp_backlog_queue_size` | `511` | In high requests-per-second environments you need an high backlog in order to avoid slow clients connections issues |
 | `openio_redis_tcp_keepalive` | `0` | The specified value (in seconds) is the period used to send ACKs to clients |

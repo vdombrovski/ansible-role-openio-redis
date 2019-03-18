@@ -1,0 +1,49 @@
+---
+- name: generate docker DB group
+  hosts: all
+  gather_facts: false
+  tasks:
+    - add_host:
+        name: "{{ item.name }}"
+        ansible_host: "{{ item.ip }}"
+        groups: redis
+      with_items:
+        - { name: "node1", ip: "172.17.0.2" }
+        - { name: "node2", ip: "172.17.0.3" }
+        - { name: "node3", ip: "172.17.0.4" }
+      delegate_to: localhost
+      run_once: true
+      changed_when: false
+
+- hosts: localhost
+  become: true
+  vars:
+    NS: TRAVIS
+  roles:
+    - role: users
+    - role: repository
+      openio_repository_no_log: false
+      openio_repository_products:
+        sds:
+          release: "18.10"
+    - role: gridinit
+      openio_gridinit_namespace: "{{ NS }}"
+      openio_gridinit_per_ns: true
+    - role: role_under_test
+      openio_redis_namespace: "{{ NS }}"
+      openio_redis_bind_address: "{{ ansible_default_ipv4.address }}"
+      openio_redis_master:
+        address: 172.17.0.2
+        port: 6011
+
+    - role: role_under_test
+      openio_redis_namespace: "{{ NS }}"
+      openio_redis_bind_address: "{{ ansible_default_ipv4.address }}"
+      openio_redis_type: redissentinel
+      openio_redis_bind_port: 6012
+      openio_redis_master:
+        address: 172.17.0.2
+        port: 6011
+
+
+...
