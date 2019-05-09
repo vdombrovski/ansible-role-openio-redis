@@ -67,12 +67,34 @@
   register: _redis_conf
   tags: configure
 
-- name: restart redis
+- name: "restart redis to apply the new configuration"
   shell: |
     gridinit_cmd reload
     gridinit_cmd restart  {{ openio_redis_namespace }}-{{ openio_redis_servicename }}
+  register: _restart_redis
   when:
-    - _redis_conf.changed or _gridinit_conf.changed
+    - _redis_conf is changed or _gridinit_conf is changed
     - not openio_redis_provision_only
   tags: configure
+
+- block:
+    - name: "Ensure redis is started"
+      command: gridinit_cmd start {{ openio_redis_namespace }}-{{ openio_redis_servicename }}
+      register: _start_redis
+      changed_when: '"Success" in _start_redis.stdout'
+      when:
+        - not openio_redis_provision_only
+        - _restart_redis is skipped
+      tags: configure
+
+    - name: check redis
+      command: "redis-cli -h {{ openio_redis_bind_address }} -p {{ openio_redis_bind_port }} INFO"
+      register: _redis_check
+      retries: 3
+      delay: 5
+      until: _redis_check is success
+      changed_when: false
+      when:
+        - not openio_redis_provision_only
+  when: openio_bootstrap | d(false)
 ...
