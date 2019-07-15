@@ -1,0 +1,85 @@
+#!/usr/bin/env python
+
+import os
+import subprocess
+import fnmatch
+from collections import defaultdict
+import redis
+from json import dumps
+
+command = 'redis-server'
+oio_conf_dir = '/etc/oio/sds'
+conf_files_pattern = ['redis.conf', 'redis-*.conf']
+
+def cmd_exists(cmd):
+    return any(
+        os.access(os.path.join(path, cmd), os.X_OK) 
+        for path in os.environ["PATH"].split(os.pathsep)
+    )
+
+def unwrap_quotes(input_line):
+    out = input_line.split(' ')[1].rstrip('\n')
+    if out.startswith('"') and out.endswith('"'):
+        out = out[1:-1]
+    return out
+
+facts = {}
+facts['installed'] = cmd_exists(command)
+
+if facts['installed']:
+    try:
+        redis_server_version = subprocess.check_output(
+            ["redis-server", "--version"]).split(' ')[2]
+        facts['version'] = redis_server_version.split('=')[1]
+    except Exception as e:
+        pass
+
+    redis_instances = []
+
+    conf_files = defaultdict(dict)
+    for root, dirnames, filenames in os.walk(oio_conf_dir):
+        for pattern in conf_files_pattern:
+            for filename in fnmatch.filter(filenames, pattern):
+                conf = os.path.join(root, filename)
+                ns = conf.split('/')[4]
+                service = conf.split('/')[5]
+                conf_files[ns].setdefault(service, []).append(conf)
+
+    for ns, services in conf_files.items():
+        for service, confs in services.items():
+            setting = {'service': service}
+            setting['namespace'] = ns
+            for conf in confs:
+                with open(conf, 'r') as f:
+                    for line in f.readlines():
+                        if line.startswith('bind'):
+                            setting['bind'] = unwrap_quotes(line)
+                        if line.startswith('port'):
+                            setting['port'] = int(unwrap_quotes(line))
+                        if line.startswith('dir'):
+                            setting['dir'] = unwrap_quotes(line)
+            try:
+                r = redis.StrictRedis(
+                        host = setting['bind'],
+                        port = setting['port'])
+                infos = r.info()
+                setting['role'] = infos['role']
+                setting['redis_mode'] = str(infos['redis_mode'])
+                if setting['role'] == 'slave':
+                    setting['master_host'] = str(infos['master_host'])
+                    setting['master_port'] = int(infos['master_port'])
+                elif setting['role'] == 'master':
+                    setting['connected_slaves'] = int(infos['connected_slaves'])
+                    slaves = {}
+                    for s in range(setting['connected_slaves']):
+                        slaves[s] = infos['slave' + str(s)]
+                    setting['slaves'] = slaves
+
+
+            except Exception as e:
+                pass
+            redis_instances.append(setting)
+
+    facts['instances'] = redis_instances
+
+print(dumps(facts, sort_keys=True, indent=2))

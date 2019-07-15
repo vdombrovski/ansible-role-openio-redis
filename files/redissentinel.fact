@@ -1,0 +1,88 @@
+#!/usr/bin/env python
+
+import os
+import subprocess
+import fnmatch
+from collections import defaultdict
+import redis
+from json import dumps
+
+command = 'redis-server'
+oio_conf_dir = '/etc/oio/sds'
+conf_files_pattern = ['redissentinel.conf', 'redissentinel-*.conf']
+
+def cmd_exists(cmd):
+    return any(
+        os.access(os.path.join(path, cmd), os.X_OK) 
+        for path in os.environ["PATH"].split(os.pathsep)
+    )
+
+def unwrap_quotes(input_line):
+    out = input_line.split(' ')[1].rstrip('\n')
+    if out.startswith('"') and out.endswith('"'):
+        out = out[1:-1]
+    return out
+
+facts = {}
+facts['installed'] = cmd_exists(command)
+
+if facts['installed']:
+    try:
+        redis_sentinel_version = subprocess.check_output(
+            ["redis-server", "--version"]).split(' ')[2]
+        facts['version'] = redis_sentinel_version.split('=')[1]
+    except Exception as e:
+        pass
+
+    redis_instances = []
+
+    conf_files = defaultdict(dict)
+    for root, dirnames, filenames in os.walk(oio_conf_dir):
+        for pattern in conf_files_pattern:
+            for filename in fnmatch.filter(filenames, pattern):
+                conf = os.path.join(root, filename)
+                ns = conf.split('/')[4]
+                service = conf.split('/')[5]
+                conf_files[ns].setdefault(service, []).append(conf)
+
+    for ns, services in conf_files.items():
+        for service, confs in services.items():
+            setting = {'service': service}
+            setting['namespace'] = ns
+            for conf in confs:
+                with open(conf, 'r') as f:
+                    for line in f.readlines():
+                        if line.startswith('bind'):
+                            setting['bind'] = unwrap_quotes(line)
+                        if line.startswith('port'):
+                            setting['port'] = int(unwrap_quotes(line))
+                        if line.startswith('dir'):
+                            setting['dir'] = unwrap_quotes(line)
+                        if line.startswith('sentinel auth-pass'):
+                            setting['sentinel_auth-pass'] = unwrap_quotes(line)
+            try:
+                r = redis.StrictRedis(
+                        host = setting['bind'],
+                        port = setting['port'])
+                infos = r.info()
+                setting['redis_mode'] = str(infos['redis_mode'])
+                monitors = []
+                for monitor in r.sentinel_masters().keys():
+                    master_ip_port = r.sentinel_get_master_addr_by_name(monitor)
+                    sentinels = []
+                    slaves = []
+                    for entry in r.sentinel_sentinels(monitor):
+                        sentinels.append({'ip': entry['ip'], 'port': entry['port']})
+                    for entry in r.sentinel_slaves(monitor):
+                        slaves.append({'ip': entry['ip'], 'port': entry['port']})
+                    monitor_entry = {'name': monitor,  'master_host': master_ip_port[0], 'master_port': master_ip_port[1], 'other_sentinels': sentinels, 'slaves': slaves}
+                    monitors.append(monitor_entry)
+                setting['monitors'] = monitors
+
+            except Exception as e:
+                pass
+            redis_instances.append(setting)
+
+    facts['instances'] = redis_instances
+
+print(dumps(facts, sort_keys=True, indent=2))

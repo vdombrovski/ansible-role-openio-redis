@@ -5,8 +5,6 @@ dir "{{ openio_redis_volume }}"
 daemonize no
 pidfile "{{ openio_redis_pid_directory }}/{{ openio_redis_type }}-{{ openio_redis_serviceid }}.pid"
 logfile "/var/log/oio/sds/{{ openio_redis_namespace }}/{{ openio_redis_type }}-{{ openio_redis_serviceid }}/{{ openio_redis_type }}-{{ openio_redis_serviceid }}.log"
-sentinel monitor {{ openio_redis_master_groupname }} {{ openio_redis_master.address }} {{ openio_redis_master.port }} {{ openio_redis_quorum }}
-sentinel down-after-milliseconds {{ openio_redis_master_groupname }} {{ openio_redis_down_after }}
 min-slaves-to-write 1
 min-slaves-max-lag 10
 {% if openio_redis_auth_pass %}

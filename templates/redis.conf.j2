@@ -51,6 +51,3 @@ hz 10
 aof-rewrite-incremental-fsync yes
 maxclients {{ openio_redis_maxclients }}
 maxmemory {{ openio_redis_maxmemory }}
-{% if openio_redis_master.address not in ansible_all_ipv4_addresses %}
-slaveof {{ openio_redis_master.address }} {{ openio_redis_master.port }}
-{% endif %}
