@@ -19,7 +19,7 @@ dbfilename dump.rdb
 dir "{{ openio_redis_volume }}"
 slave-serve-stale-data yes
 slave-read-only yes
-slave-priority 100
+slave-priority {{ openio_redis_slave_priority }}
 repl-diskless-sync no
 repl-diskless-sync-delay 5
 repl-disable-tcp-nodelay no
