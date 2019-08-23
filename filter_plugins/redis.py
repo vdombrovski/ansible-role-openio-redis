@@ -19,6 +19,8 @@ class FilterModule(object):
             if instance['namespace'] == namespace and instance['service'] == service:
                 if "master_host" in instance:
                     return instance[property]
+                if "role" in instance and instance['role'] == 'master':
+                    return instance.get('bind')
         return ''
 
 
