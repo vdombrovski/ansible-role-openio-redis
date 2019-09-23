@@ -23,6 +23,7 @@
 
 @test 'Sentinel voted a new  master' {
   bash -c "docker exec -ti ${SUT_ID} redis-cli -h ${SUT_IP} -p 6011 DEBUG sleep 30"
+  sleep 5
   run bash -c "docker exec -ti ${SUT_ID} redis-cli -h ${SUT_IP} -p 6012 SENTINEL get-master-addr-by-name TRAVIS-master-1 |sed -e '1q;d'|cut -d' ' -f2"
   echo "output: "$output
   echo "status: "$status
