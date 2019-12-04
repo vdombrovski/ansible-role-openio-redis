@@ -20,6 +20,7 @@
     reload: true
     state: present
   when:
+    - openio_redis_sysctl_managed
     - openio_redis_type == "redis"
     - ansible_virtualization_type != 'docker'
   tags: install

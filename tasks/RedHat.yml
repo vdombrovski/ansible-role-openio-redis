@@ -19,6 +19,7 @@
     dest: /etc/tuned/redis/
     mode: 0755
   when:
+    - openio_redis_sysctl_managed
     - openio_redis_type == "redis"
     - ansible_virtualization_type != 'docker'
   tags: install
@@ -29,6 +30,7 @@
   changed_when: false
   ignore_errors: true
   when:
+    - openio_redis_sysctl_managed
     - openio_redis_type == "redis"
     - ansible_virtualization_type != 'docker'
   tags: install
@@ -37,6 +39,7 @@
   command: "/usr/sbin/tuned-adm profile redis"
   ignore_errors: "{{ ansible_check_mode }}"
   when:
+    - openio_redis_sysctl_managed
     - openio_redis_type == "redis"
     - ansible_virtualization_type != 'docker'
     - "'redis' not in tuned_active.stdout"
